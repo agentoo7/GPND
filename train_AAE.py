@@ -26,6 +26,12 @@ import time
 import random
 import os
 
+#Values for MNIST
+dataset_mean = 0.1307
+dataset_std = 0.3081
+
+
+
 use_cuda = torch.cuda.is_available()
 
 FloatTensor = torch.FloatTensor
@@ -58,7 +64,6 @@ def numpy2torch(x):
 
 def extract_batch(data, it, batch_size):
     x = numpy2torch(data[it * batch_size:(it + 1) * batch_size, :, :]) / 255.0
-    #x.sub_(0.5).div_(0.5)
     return Variable(x)
 
 
@@ -98,11 +103,11 @@ def main(folding_id, inliner_classes, total_classes, folds=5):
     setup(G)
     G.weight_init(mean=0, std=0.02)
 
-    D = Discriminator()
+    D = Discriminator(input_mean=dataset_mean, input_std=dataset_std)
     setup(D)
     D.weight_init(mean=0, std=0.02)
 
-    E = Encoder(zsize)
+    E = Encoder(zsize, input_mean=dataset_mean, input_std=dataset_std)
     setup(E)
     E.weight_init(mean=0, std=0.02)
 
@@ -271,10 +276,14 @@ def main(folding_id, inliner_classes, total_classes, folds=5):
 
 
     print("Training finish!... save training results")
-    torch.save(G.state_dict(), "Gmodel.pkl")
-    torch.save(E.state_dict(), "Emodel.pkl")
-    torch.save(D.state_dict(), "Dmodel.pkl")
-    torch.save(ZD.state_dict(), "ZDmodel.pkl")
+
+    torch.save({
+                'G': G.state_dict(),
+                'E': E.state_dict(),
+                #'D': D.state_dict(),
+                #'ZD': ZD.state_dict(),
+                }, "model.pth")
+
 
 if __name__ == '__main__':
     main(0, [0], 10)

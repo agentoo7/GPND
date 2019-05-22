@@ -33,6 +33,7 @@ import scipy.stats
 import os
 from sklearn.metrics import roc_auc_score
 
+
 title_size = 16
 axis_title_size = 14
 ticks_size = 18
@@ -69,7 +70,6 @@ def numpy2torch(x):
 
 def extract_batch(data, it, batch_size):
     x = numpy2torch(data[it * batch_size:(it + 1) * batch_size]) / 255.0
-    #x.sub_(0.5).div_(0.5)
     return Variable(x)
 
 
@@ -163,8 +163,9 @@ def main(folding_id, inliner_classes, total_classes, folds=5):
     G.eval()
     E.eval()
 
-    G.load_state_dict(torch.load("Gmodel.pkl"))
-    E.load_state_dict(torch.load("Emodel.pkl"))
+    checkpoint = torch.load("model.pth")
+    G.load_state_dict(checkpoint['G'])
+    E.load_state_dict(checkpoint['E'])
 
     sample = torch.randn(64, z_size).to(device)
     sample = G(sample.view(-1, z_size, 1, 1)).cpu()

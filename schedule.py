@@ -7,6 +7,7 @@ full_run = True
 
 percentages = [10, 20, 30, 40, 50]
 
+
 def save_results(results):
     f = open("results.csv", 'wt')
     writer = csv.writer(f)
