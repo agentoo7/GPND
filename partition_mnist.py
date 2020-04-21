@@ -58,10 +58,11 @@ def partition(cfg, logger):
 
     folds = cfg.DATASET.FOLDS_COUNT
 
+    # class_bins: create dictionary with key is label(0..9) and values is list of correspoinding images data
     class_bins = {}
 
     for x in mnist:
-        if x[0] not in class_bins:
+        if x[0] not in class_bins: # x[0]: label, x[1]: img data
             class_bins[x[0]] = []
         class_bins[x[0]].append(x)
 
